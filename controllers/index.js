@@ -6,7 +6,7 @@ export const getDatas = (data) => {
         try {
             const { id, search, page, limit } = req.query
             let result
-            if (req.query) {
+            if (Object.keys(req.query).length !== 0) {
                 if (id) {
                     result = await data.find({ _id: id })
                 } else if (search) {
