@@ -19,9 +19,7 @@ export const validateRegister = (req, res, next) => {
     if (phoneNumber.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)
     ) {
         req.user = { phoneNumber }
-	res.status(statusHTTP.SUCCESS).json({
-                    existed: false
-        })
+	
         next()
     } else {
         res.json({
