@@ -3,6 +3,7 @@ import fs from 'fs'
 import bcrypt from 'bcrypt'
 import Auth from '../models/Auth.js'
 import { statusHTTP } from '../config/index.js'
+import { getDatas } from './index.js'
 
 const saltRounds = 10
 
@@ -10,6 +11,8 @@ let privateKey = fs.readFileSync('./keys/private-key.pem')
 let publicKey = fs.readFileSync('./keys/public-key.pem')
 let privateKeyRefresh = fs.readFileSync('./keys/private-refresh.pem')
 let publicKeyRefresh = fs.readFileSync('./keys/public-refresh.pem')
+
+export const getAccount = getDatas(Auth)
 
 export const validateRegister = (req, res, next) => {
     const { username, password, phoneNumber } = req.body
@@ -59,7 +62,6 @@ export const register = async (req, res, next) => {
         })
     }
 }
-
 
 export const login = async (req, res, next) => {
     try {
