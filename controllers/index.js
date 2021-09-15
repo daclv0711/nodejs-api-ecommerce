@@ -29,10 +29,10 @@ export const getDatas = (data) => {
             } else {
                 result = await data.find({})
             }
-            res.status(statusHTTP.SUCCESS).json(result)
+            return res.status(statusHTTP.SUCCESS).json(result)
 
         } catch (error) {
-            res.status(statusHTTP.FAIL).json({
+            return res.status(statusHTTP.FAIL).json({
                 statusCode: statusHTTP.FAIL,
                 message: error
             })
@@ -47,9 +47,9 @@ export const postData = (data) => {
 
             const item = new data(newData)
             await item.save()
-            res.status(statusHTTP.SUCCESS).json(item)
+            return res.status(statusHTTP.SUCCESS).json(item)
         } catch (error) {
-            res.status(statusHTTP.FAIL).json({
+            return res.status(statusHTTP.FAIL).json({
                 statusCode: statusHTTP.FAIL,
                 message: error
             })
@@ -63,9 +63,9 @@ export const putData = (data) => {
             const { id } = req.params
             const updateItem = req.body
             const item = await data.findOneAndUpdate({ _id: id }, updateItem)
-            res.status(statusHTTP.SUCCESS).json(item)
+            return res.status(statusHTTP.SUCCESS).json(item)
         } catch (error) {
-            res.status(statusHTTP.FAIL).json({
+            return res.status(statusHTTP.FAIL).json({
                 statusCode: statusHTTP.FAIL,
                 message: error
             })
@@ -79,9 +79,9 @@ export const patchData = (data) => {
             const { id } = req.params
             const updateItem = req.body
             const item = await data.findOneAndUpdate({ _id: id }, updateItem)
-            res.status(statusHTTP.SUCCESS).json(item)
+            return res.status(statusHTTP.SUCCESS).json(item)
         } catch (error) {
-            res.status(statusHTTP.FAIL).json({
+            return res.status(statusHTTP.FAIL).json({
                 statusCode: statusHTTP.FAIL,
                 message: error
             })
@@ -94,9 +94,9 @@ export const deleteData = (data) => {
         try {
             const { id } = req.params
             const item = await data.findOneAndRemove({ _id: id })
-            res.status(statusHTTP.SUCCESS).json(item)
+            return res.status(statusHTTP.SUCCESS).json(item)
         } catch (error) {
-            res.status(statusHTTP.FAIL).json({
+            return res.status(statusHTTP.FAIL).json({
                 statusCode: statusHTTP.FAIL,
                 message: error
             })

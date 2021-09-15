@@ -10,6 +10,7 @@ import preferents from './routes/preferents.js'
 import productLaptops from './routes/productLaptops.js'
 import productSugges from './routes/productSugges.js'
 import searchSpecials from './routes/searchSpecials.js'
+import auth from './routes/auth.js'
 import { statusHTTP } from './config/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -53,7 +54,9 @@ app.use('/api/v2/slide', slides)
 
 app.use('/api/v2/search_special', searchSpecials)
 
-app.use('/', (req, res) => {
+app.use('/api/v2/auth', auth)
+
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/api.html'))
 })
 
