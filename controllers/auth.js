@@ -15,12 +15,13 @@ let publicKeyRefresh = fs.readFileSync('./keys/public-refresh.pem')
 export const getAccount = getDatas(Auth)
 
 export const validateRegister = (req, res, next) => {
-    const { username, password, phoneNumber } = req.body
-    if (username?.match(/^[a-zA-Z!@#\$%\^\&*\)\(+=._-]{2,}$/g)
-        && password?.match(/^(?=.*?[a-z])(?=.*?[0-9]).{8,32}$/g)
-        && phoneNumber.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)
+    const { phoneNumber } = req.body
+    if (phoneNumber.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)
     ) {
-        req.user = { username, password, phoneNumber }
+        req.user = { phoneNumber }
+	res.status(statusHTTP.SUCCESS).json({
+                    existed: false
+        })
         next()
     } else {
         res.json({
@@ -31,7 +32,8 @@ export const validateRegister = (req, res, next) => {
 
 export const register = async (req, res, next) => {
     try {
-        const { username, password, phoneNumber } = req.user
+        const { phoneNumber } = req.user
+	const { username, password } = req.body
         let encrytedPassword = ''
         bcrypt.hash(password, saltRounds, async function (err, hash) {
             encrytedPassword = hash
@@ -41,6 +43,8 @@ export const register = async (req, res, next) => {
                     existed: true
                 })
             } else {
+		if(password?.match(/^(?=.*?[a-z])(?=.*?[0-9]).{8,32}$/g)
+        && username?.match(/^[a-zA-Z!@#\$%\^\&*\)\(+=._-]{2,}$/g)){
                 const newUser = new Auth({
                     username,
                     hash: encrytedPassword,
@@ -51,6 +55,11 @@ export const register = async (req, res, next) => {
                 return res.status(statusHTTP.SUCCESS).json({
                     createAccount: true,
                 })
+		}else {
+        res.json({
+            isValidate: false
+        })
+    }
             }
 
         })
