@@ -41,9 +41,6 @@ export const register = async (req, res, next) => {
                     existed: true
                 })
             } else {
-res.status(statusHTTP.SUCCESS).json({
-                    existed: false
-                })
 		if(password?.match(/^(?=.*?[a-z])(?=.*?[0-9]).{8,32}$/g)
         && username?.match(/^[a-zA-Z!@#\$%\^\&*\)\(+=._-]{2,}$/g)){
                 const newUser = new Auth({
