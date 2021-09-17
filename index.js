@@ -11,6 +11,7 @@ import productLaptops from './routes/productLaptops.js'
 import productSugges from './routes/productSugges.js'
 import searchSpecials from './routes/searchSpecials.js'
 import auth from './routes/auth.js'
+import chat from './routes/chat.js'
 import { statusHTTP } from './config/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -56,6 +57,9 @@ app.use('/api/v2/search_special', searchSpecials)
 
 app.use('/api/v2/auth', auth)
 
+app.use('/api/v2/chat', chat)
+
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/api.html'))
 })
@@ -67,10 +71,11 @@ app.use('*', (req, res) => {
     })
 })
 
-
-
 mongoose.connect(process.env.API_ACCOUNT, {
     useNewUrlParser: true, useUnifiedTopology: true
+}, err => {
+    if (err) throw err;
+    console.log("Database created!");
 })
 
 app.listen(PORT, (req, res) => {

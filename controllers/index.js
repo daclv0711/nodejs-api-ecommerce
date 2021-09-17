@@ -44,7 +44,6 @@ export const postData = (data) => {
     return async (req, res) => {
         try {
             const newData = req.body
-
             const item = new data(newData)
             await item.save()
             return res.status(statusHTTP.SUCCESS).json(item)

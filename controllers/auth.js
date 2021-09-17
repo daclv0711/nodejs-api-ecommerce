@@ -7,31 +7,36 @@ import { getDatas } from './index.js'
 
 const saltRounds = 10
 
-let privateKey = fs.readFileSync('./keys/private-key.pem')
-let publicKey = fs.readFileSync('./keys/public-key.pem')
-let privateKeyRefresh = fs.readFileSync('./keys/private-refresh.pem')
-let publicKeyRefresh = fs.readFileSync('./keys/public-refresh.pem')
+const privateKey = fs.readFileSync('./keys/private-key.pem')
+const privateKeyRefresh = fs.readFileSync('./keys/private-refresh.pem')
 
 export const getAccount = getDatas(Auth)
 
-export const validateRegister = (req, res, next) => {
-    const { phoneNumber } = req.body
-    if (phoneNumber.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)
-    ) {
-        req.user = { phoneNumber }
-	
-        next()
-    } else {
-        res.json({
-            isValidate: false
+export const existed = async (req, res) => {
+    try {
+        const { phoneNumber } = req.body
+        const dataUser = await Auth.findOne({ phoneNumber })
+        if (dataUser) {
+            return res.status(statusHTTP.SUCCESS).json({
+                existed: true
+            })
+        } else {
+            return res.status(statusHTTP.SUCCESS).json({
+                existed: false,
+            })
+        }
+
+    } catch (error) {
+        return res.status(statusHTTP.FAIL).json({
+            statusCode: statusHTTP.FAIL,
+            message: error
         })
     }
 }
 
-export const register = async (req, res, next) => {
+export const register = async (req, res) => {
     try {
-        const { phoneNumber } = req.user
-	const { username, password } = req.body
+        const { username, password, phoneNumber } = req.user
         let encrytedPassword = ''
         bcrypt.hash(password, saltRounds, async function (err, hash) {
             encrytedPassword = hash
@@ -41,8 +46,6 @@ export const register = async (req, res, next) => {
                     existed: true
                 })
             } else {
-		if(password?.match(/^(?=.*?[a-z])(?=.*?[0-9]).{8,32}$/g)
-        && username?.match(/^[a-zA-Z!@#\$%\^\&*\)\(+=._-]{2,}$/g)){
                 const newUser = new Auth({
                     username,
                     hash: encrytedPassword,
@@ -53,11 +56,6 @@ export const register = async (req, res, next) => {
                 return res.status(statusHTTP.SUCCESS).json({
                     createAccount: true,
                 })
-		}else {
-        res.json({
-            isValidate: false
-        })
-    }
             }
 
         })
@@ -70,7 +68,7 @@ export const register = async (req, res, next) => {
     }
 }
 
-export const login = async (req, res, next) => {
+export const login = async (req, res) => {
     try {
         const { phoneNumber, password } = req.body
         const user = await Auth.findOne({ phoneNumber })
