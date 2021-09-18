@@ -61,7 +61,7 @@ export const putData = (data) => {
         try {
             const { id } = req.params
             const updateItem = req.body
-            const item = await data.findOneAndUpdate({ _id: id }, updateItem)
+            const item = await data.findOneAndUpdate({ _id: id }, updateItem, { new: true })
             return res.status(statusHTTP.SUCCESS).json(item)
         } catch (error) {
             return res.status(statusHTTP.FAIL).json({
@@ -77,7 +77,7 @@ export const patchData = (data) => {
         try {
             const { id } = req.params
             const updateItem = req.body
-            const item = await data.findOneAndUpdate({ _id: id }, updateItem)
+            const item = await data.findOneAndUpdate({ _id: id }, updateItem, { new: true })
             return res.status(statusHTTP.SUCCESS).json(item)
         } catch (error) {
             return res.status(statusHTTP.FAIL).json({

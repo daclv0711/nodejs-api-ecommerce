@@ -9,7 +9,6 @@ const publicKeyRefresh = fs.readFileSync('./keys/public-refresh.pem')
 export const checkToken = async (req, res, next) => {
     try {
         const { username } = req.body
-        console.log(req.headers['authorization'])
         let accessToken = req.headers['authorization'].split(' ')[1]
         const result = jwt.verify(accessToken, publicKey, { algorithms: 'RS256' })
         const data = await Auth.findOne({
@@ -17,7 +16,6 @@ export const checkToken = async (req, res, next) => {
             name: username
         })
         if (data) {
-            console.log('success')
             req.result = { result, username }
             next()
         } else {
