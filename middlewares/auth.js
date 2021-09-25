@@ -13,8 +13,9 @@ export const checkToken = async (req, res, next) => {
         const result = jwt.verify(accessToken, publicKey, { algorithms: 'RS256' })
         const data = await Auth.findOne({
             _id: result.sub,
-            name: username
+            username
         })
+
         if (data) {
             req.result = { result, username }
             next()
@@ -25,8 +26,8 @@ export const checkToken = async (req, res, next) => {
             })
         }
     } catch (error) {
-        return res.status(statusHTTP.FAIL).json({
-            statusCode: statusHTTP.FAIL,
+        return res.status(statusHTTP.UNAUTHORIZED).json({
+            statusCode: statusHTTP.UNAUTHORIZED,
             message: error
         })
     }
