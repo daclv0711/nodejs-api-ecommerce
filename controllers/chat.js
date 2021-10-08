@@ -1,7 +1,7 @@
 import { statusHTTP } from "../config/index.js"
 import { io } from "../index.js"
 import Chat from "../models/Chat.js"
-import { deleteData, getDatas, patchData, putData } from "./index.js"
+import { getDatas, patchData } from "./index.js"
 
 export const getListChat = getDatas(Chat)
 

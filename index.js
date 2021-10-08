@@ -11,13 +11,13 @@ import productLaptops from './routes/productLaptops.js'
 import productSugges from './routes/productSugges.js'
 import searchSpecials from './routes/searchSpecials.js'
 import auth from './routes/auth.js'
+import user from './routes/user.js'
 import chat from './routes/chat.js'
 import { statusHTTP } from './config/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import http from 'http'
 import { Server } from 'socket.io'
-import { postChatProduct } from './controllers/chat.js'
 
 env.config()
 const app = express()
@@ -47,7 +47,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')))
 
 //cors
 app.use(function (req, res, next) {
-
+    req.credentials = true
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -98,6 +98,8 @@ app.use('/api/v2/search_special', searchSpecials)
 app.use('/api/v2/auth', auth)
 
 app.use('/api/v2/chat', chat)
+
+app.use('/api/v2/user', user)
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/api.html'))

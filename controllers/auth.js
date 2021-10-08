@@ -9,6 +9,9 @@ const saltRounds = 10
 
 const privateKey = fs.readFileSync('./keys/private-key.pem')
 const privateKeyRefresh = fs.readFileSync('./keys/private-refresh.pem')
+const publicKeyRefresh = fs.readFileSync('./keys/public-refresh.pem')
+
+let refreshTokens = []
 
 export const getAccount = getDatas(Auth)
 
@@ -75,16 +78,20 @@ export const login = async (req, res) => {
         if (user) {
             bcrypt.compare(password, user.hash, function (err, result) {
                 if (result) {
-                    const accessToken = jwt.sign({ sub: user._id, type: 'access' }, privateKey, { algorithm: 'RS256', expiresIn: '2h' })
+                    const accessToken = jwt.sign({ sub: user._id, type: 'access' }, privateKey, { algorithm: 'RS256', expiresIn: '20s' })
                     const refreshToken = jwt.sign({ sub: user._id, type: 'refresh' }, privateKeyRefresh, { algorithm: 'RS256', expiresIn: '1d' })
-                    return res.status(statusHTTP.SUCCESS).json({
+
+                    const response = {
                         statusCode: statusHTTP.SUCCESS,
                         message: 'Success',
                         username: user.username,
                         _id: user._id,
                         accessToken,
                         refreshToken
-                    })
+                    }
+                    refreshTokens.push(refreshToken)
+
+                    return res.status(statusHTTP.SUCCESS).json(response)
                 } else {
                     return res.status(statusHTTP.UNAUTHORIZED).json({
                         statusCode: statusHTTP.UNAUTHORIZED,
@@ -106,4 +113,23 @@ export const login = async (req, res) => {
             message: error
         })
     }
+}
+
+export const refreshToken = (req, res) => {
+    const { refreshToken } = req.body
+    if (!refreshToken) return res.status(statusHTTP.NOT_FOUND).json({ statusCode: statusHTTP.NOT_FOUND })
+    if (!refreshTokens.includes(refreshToken)) return res.status(statusHTTP.FORBIDDEN).json({ statusCode: statusHTTP.FORBIDDEN })
+
+    jwt.verify(refreshToken, publicKeyRefresh, { algorithms: 'RS256' }, (err, data) => {
+        if (err) res.status(statusHTTP.FORBIDDEN).json({ statusCode: statusHTTP.FORBIDDEN, err })
+        const accessToken = jwt.sign({ sub: data.sub, type: 'access' }, privateKey, { algorithm: 'RS256', expiresIn: '2m' })
+        return res.json({ accessToken })
+
+    })
+}
+
+export const logOut = (req, res) => {
+    const { refreshToken } = req.body
+    refreshTokens = refreshTokens.filter(refToken => refToken !== refreshToken)
+    return res.sendStatus(200)
 }
